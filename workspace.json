@@ -1,6 +1,6 @@
 {
   "configuration" : { },
-  "description" : "Automatically generated C4 model with relationships",
+  "description" : "Spring Boot + MySQL",
   "documentation" : { },
   "id" : 0,
   "model" : {
@@ -16,9 +16,9 @@
         "sourceId" : "1",
         "tags" : "Relationship"
       }, {
-        "description" : "Sends HTTP requests",
-        "destinationId" : "5",
-        "id" : "6",
+        "description" : "Uses",
+        "destinationId" : "6",
+        "id" : "7",
         "sourceId" : "1",
         "tags" : "Relationship"
       } ],
@@ -27,35 +27,49 @@
     "softwareSystems" : [ {
       "containers" : [ {
         "components" : [ {
-          "description" : "Spring Service",
-          "id" : "7",
-          "name" : "HelloService",
+          "description" : "Controller",
+          "id" : "6",
+          "name" : "HelloController",
           "relationships" : [ {
-            "description" : "Uses via field: repository",
+            "description" : "Uses via field: service",
             "destinationId" : "8",
-            "id" : "10",
-            "sourceId" : "7",
+            "id" : "11",
+            "sourceId" : "6",
             "tags" : "Relationship"
           } ],
           "size" : 0,
           "tags" : "Element,Component",
           "technology" : "Java"
         }, {
-          "description" : "Spring Repository",
+          "description" : "Service",
           "id" : "8",
-          "name" : "HelloRepository",
+          "name" : "HelloService",
+          "relationships" : [ {
+            "description" : "Uses via field: repository",
+            "destinationId" : "9",
+            "id" : "12",
+            "sourceId" : "8",
+            "tags" : "Relationship"
+          } ],
           "size" : 0,
           "tags" : "Element,Component",
           "technology" : "Java"
         }, {
-          "description" : "Spring Controller",
+          "description" : "Spring-managed MySQL datasource",
           "id" : "5",
-          "name" : "HelloController",
+          "name" : "MySQL Database",
+          "size" : 0,
+          "tags" : "Element,Component",
+          "technology" : "MySQL"
+        }, {
+          "description" : "Repository",
+          "id" : "9",
+          "name" : "HelloRepository",
           "relationships" : [ {
-            "description" : "Uses via field: service",
-            "destinationId" : "7",
-            "id" : "9",
-            "sourceId" : "5",
+            "description" : "Reads/Writes data",
+            "destinationId" : "5",
+            "id" : "10",
+            "sourceId" : "9",
             "tags" : "Relationship"
           } ],
           "size" : 0,
@@ -69,7 +83,7 @@
         "tags" : "Element,Container",
         "technology" : "Java"
       } ],
-      "description" : "Generated automatically",
+      "description" : "Generated C4 model",
       "documentation" : { },
       "id" : "2",
       "location" : "Unspecified",
@@ -91,11 +105,15 @@
         "x" : 0,
         "y" : 0
       }, {
-        "id" : "7",
+        "id" : "6",
         "x" : 0,
         "y" : 0
       }, {
         "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
         "x" : 0,
         "y" : 0
       } ],
@@ -103,11 +121,13 @@
       "key" : "components",
       "order" : 2,
       "relationships" : [ {
-        "id" : "6"
+        "id" : "11"
+      }, {
+        "id" : "12"
+      }, {
+        "id" : "7"
       }, {
         "id" : "10"
-      }, {
-        "id" : "9"
       } ]
     } ],
     "configuration" : {
@@ -124,9 +144,10 @@
           "shape" : "Hexagon",
           "tag" : "Component"
         }, {
-          "background" : "#438dd5",
-          "color" : "#ffffff",
-          "tag" : "Container"
+          "background" : "#f5da55",
+          "color" : "#000000",
+          "shape" : "Cylinder",
+          "tag" : "Database"
         } ]
       },
       "terminology" : { }

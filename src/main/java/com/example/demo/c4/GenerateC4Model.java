@@ -3,71 +3,111 @@ package com.example.demo.c4;
 import com.structurizr.Workspace;
 import com.structurizr.model.*;
 import com.structurizr.view.*;
+import com.structurizr.io.json.JsonWriter;
 import org.reflections.Reflections;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-import java.io.FileWriter;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.*;
 
-import com.structurizr.io.json.JsonWriter;
+// https://www.baeldung.com/structurizr
 
 public class GenerateC4Model {
 
     public static void main(String[] args) throws Exception {
 
-        Workspace workspace = new Workspace("C4 Model", "Automatically generated C4 model with relationships");
+        // Load application.properties
+        Properties props = new Properties();
+        try (InputStream input = new FileInputStream("src/main/resources/application.properties")) {
+            props.load(input);
+        }
+
+        // Get database properties
+        String jdbcUrl = props.getProperty("spring.datasource.url");
+        String username = props.getProperty("spring.datasource.username");
+        String password = props.getProperty("spring.datasource.password");
+
+        // Create a workspace for the C4 model
+        Workspace workspace = new Workspace("C4 Model", "Spring Boot + MySQL");
+
+        // Create the model section
         Model model = workspace.getModel();
+
+        // Create the view section
         ViewSet views = workspace.getViews();
 
-        // add user for the model
+        // Add a person
         Person user = model.addPerson("User", "Uses the application");
-        //add SoftwareSystem for the model
-        SoftwareSystem system = model.addSoftwareSystem("Spring Boot App", "Generated automatically");
-        // add container called web application
+
+        // Create a SoftwareSystem for the Spring Boot application
+        SoftwareSystem system = model.addSoftwareSystem("Spring Boot App", "Generated C4 model");
+
+        // Create a container called webApp
         Container webApp = system.addContainer("Web Application", "Spring Boot App", "Java");
-        // add relation between user and web application
+
+        // Add a relation between the webApp container and the user
         user.uses(webApp, "Uses");
-        //introspect upon the java program
+
+        Component mysqlComponent = null;
+
+        // Try to connect to the database
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, username, password)) {
+            System.out.println(" Successfully connected to DB: " + jdbcUrl);
+
+            // Add the database as a component to the webApp container
+            mysqlComponent = webApp.addComponent("MySQL Database", "Spring-managed MySQL datasource", "MySQL");
+            mysqlComponent.getTags();
+
+        } catch (Exception e) {
+            System.out.println(" Could not connect to database: " + e.getMessage());
+        }
+
+        // Use reflection to introspect on the application
         Reflections reflections = new Reflections("com.example.demo");
-        //hashmap to save the component
+
         Map<Class<?>, Component> componentMap = new HashMap<>();
 
-        // Scan for components in every class
+        // Add all controllers to the webApp component
         for (Class<?> clazz : reflections.getTypesAnnotatedWith(Controller.class)) {
-            Component c = webApp.addComponent(clazz.getSimpleName(), "Spring Controller", "Java");
+            Component c = webApp.addComponent(clazz.getSimpleName(), "Controller", "Java");
             componentMap.put(clazz, c);
-            user.uses(c, "Sends HTTP requests");
+            user.uses(c, "Uses");
         }
-        // scan for services in every class
+
+        // Add all services to the webApp component
         for (Class<?> clazz : reflections.getTypesAnnotatedWith(Service.class)) {
-            Component c = webApp.addComponent(clazz.getSimpleName(), "Spring Service", "Java");
-            componentMap.put(clazz, c);
-        }
-        // scan for repositories in every class
-        for (Class<?> clazz : reflections.getTypesAnnotatedWith(Repository.class)) {
-            Component c = webApp.addComponent(clazz.getSimpleName(), "Spring Repository", "Java");
+            Component c = webApp.addComponent(clazz.getSimpleName(), "Service", "Java");
             componentMap.put(clazz, c);
         }
 
-        // Automatically detect relationships based on field types
+        // Add all repositories to the webApp component
+        for (Class<?> clazz : reflections.getTypesAnnotatedWith(Repository.class)) {
+            Component c = webApp.addComponent(clazz.getSimpleName(), "Repository", "Java");
+            componentMap.put(clazz, c);
+            if (mysqlComponent != null) {
+                c.uses(mysqlComponent, "Reads/Writes data");
+            }
+        }
+
+        // Auto-link via field injection
         for (Map.Entry<Class<?>, Component> entry : componentMap.entrySet()) {
             Class<?> sourceClass = entry.getKey();
             Component sourceComponent = entry.getValue();
 
             for (Field field : sourceClass.getDeclaredFields()) {
-                Class<?> targetType = field.getType();
-                Component targetComponent = componentMap.get(targetType);
+                Component targetComponent = componentMap.get(field.getType());
                 if (targetComponent != null) {
                     sourceComponent.uses(targetComponent, "Uses via field: " + field.getName());
                 }
             }
         }
 
-        // Views
+        // Create views
         ContainerView containerView = views.createContainerView(system, "containers", "Container view");
         containerView.addAllElements();
 
@@ -75,16 +115,16 @@ public class GenerateC4Model {
         componentView.addAllComponents();
         componentView.add(user);
 
-        // Styles
+        // Define styles
         Styles styles = views.getConfiguration().getStyles();
         styles.addElementStyle(Tags.PERSON).background("#08427b").color("#ffffff").shape(Shape.Person);
         styles.addElementStyle("Component").background("#85bb65").color("#ffffff").shape(Shape.Hexagon);
-        styles.addElementStyle("Container").background("#438dd5").color("#ffffff");
+        styles.addElementStyle("Database").background("#f5da55").color("#000000").shape(Shape.Cylinder);
 
-        // Export as workspace.json for Structurizr Lite
+        // Export the model
         try (Writer writer = new FileWriter("workspace.json")) {
             new JsonWriter(true).write(workspace, writer);
-            System.out.println("✅ C4 model generated to workspace.json");
+            System.out.println("C4 model exported to workspace.json");
         }
     }
 }
