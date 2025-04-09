@@ -15,66 +15,36 @@
         "id" : "4",
         "sourceId" : "1",
         "tags" : "Relationship"
-      }, {
-        "description" : "Uses",
-        "destinationId" : "6",
-        "id" : "7",
-        "sourceId" : "1",
-        "tags" : "Relationship"
       } ],
       "tags" : "Element,Person"
     } ],
     "softwareSystems" : [ {
       "containers" : [ {
         "components" : [ {
-          "description" : "Controller",
           "id" : "6",
-          "name" : "HelloController",
-          "relationships" : [ {
-            "description" : "Uses via field: service",
-            "destinationId" : "8",
-            "id" : "11",
-            "sourceId" : "6",
-            "tags" : "Relationship"
-          } ],
+          "name" : "Hello Controller",
+          "properties" : {
+            "component.type" : "com.example.demo.controller.HelloController"
+          },
           "size" : 0,
           "tags" : "Element,Component",
-          "technology" : "Java"
+          "technology" : "Spring MVC Controller"
         }, {
-          "description" : "Service",
-          "id" : "8",
-          "name" : "HelloService",
-          "relationships" : [ {
-            "description" : "Uses via field: repository",
-            "destinationId" : "9",
-            "id" : "12",
-            "sourceId" : "8",
-            "tags" : "Relationship"
-          } ],
+          "id" : "7",
+          "name" : "Hello Repository",
+          "properties" : {
+            "component.type" : "com.example.demo.repository.HelloRepository"
+          },
           "size" : 0,
           "tags" : "Element,Component",
-          "technology" : "Java"
+          "technology" : "Spring Data Repository"
         }, {
           "description" : "Spring-managed MySQL datasource",
           "id" : "5",
           "name" : "MySQL Database",
           "size" : 0,
-          "tags" : "Element,Component",
+          "tags" : "Element,Component,Database",
           "technology" : "MySQL"
-        }, {
-          "description" : "Repository",
-          "id" : "9",
-          "name" : "HelloRepository",
-          "relationships" : [ {
-            "description" : "Reads/Writes data",
-            "destinationId" : "5",
-            "id" : "10",
-            "sourceId" : "9",
-            "tags" : "Relationship"
-          } ],
-          "size" : 0,
-          "tags" : "Element,Component",
-          "technology" : "Java"
         } ],
         "description" : "Spring Boot App",
         "documentation" : { },
@@ -109,26 +79,13 @@
         "x" : 0,
         "y" : 0
       }, {
-        "id" : "8",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "9",
+        "id" : "7",
         "x" : 0,
         "y" : 0
       } ],
       "externalContainerBoundariesVisible" : false,
       "key" : "components",
-      "order" : 2,
-      "relationships" : [ {
-        "id" : "11"
-      }, {
-        "id" : "12"
-      }, {
-        "id" : "7"
-      }, {
-        "id" : "10"
-      } ]
+      "order" : 2
     } ],
     "configuration" : {
       "branding" : { },
