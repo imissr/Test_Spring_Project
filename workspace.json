@@ -21,16 +21,37 @@
     "softwareSystems" : [ {
       "containers" : [ {
         "components" : [ {
-          "id" : "6",
+          "id" : "7",
+          "name" : "Hello Service",
+          "properties" : {
+            "component.type" : "com.example.demo.service.HelloService"
+          },
+          "relationships" : [ {
+            "destinationId" : "6",
+            "id" : "9",
+            "sourceId" : "7",
+            "tags" : "Relationship"
+          } ],
+          "size" : 0,
+          "tags" : "Element,Component",
+          "technology" : "Spring Service"
+        }, {
+          "id" : "5",
           "name" : "Hello Controller",
           "properties" : {
             "component.type" : "com.example.demo.controller.HelloController"
           },
+          "relationships" : [ {
+            "destinationId" : "7",
+            "id" : "8",
+            "sourceId" : "5",
+            "tags" : "Relationship"
+          } ],
           "size" : 0,
           "tags" : "Element,Component",
           "technology" : "Spring MVC Controller"
         }, {
-          "id" : "7",
+          "id" : "6",
           "name" : "Hello Repository",
           "properties" : {
             "component.type" : "com.example.demo.repository.HelloRepository"
@@ -38,13 +59,6 @@
           "size" : 0,
           "tags" : "Element,Component",
           "technology" : "Spring Data Repository"
-        }, {
-          "description" : "Spring-managed MySQL datasource",
-          "id" : "5",
-          "name" : "MySQL Database",
-          "size" : 0,
-          "tags" : "Element,Component,Database",
-          "technology" : "MySQL"
         } ],
         "description" : "Spring Boot App",
         "documentation" : { },
@@ -85,7 +99,12 @@
       } ],
       "externalContainerBoundariesVisible" : false,
       "key" : "components",
-      "order" : 2
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "8"
+      }, {
+        "id" : "9"
+      } ]
     } ],
     "configuration" : {
       "branding" : { },
